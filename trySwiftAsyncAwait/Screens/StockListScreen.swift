@@ -38,13 +38,12 @@ struct StockListScreen: View {
                     
                 }.listStyle(InsetGroupedListStyle())
                 
-                
-               
-                
                 .navigationTitle("Stocks")
-            }.onAppear {
-                stockListVM.populateStocks()
-                stockListVM.populateTopNews()
+            }.task {
+                
+                await stockListVM.populate()
+                //await stockListVM.populateStocks()
+                //await stockListVM.populateTopNews()
             }
         }
     }

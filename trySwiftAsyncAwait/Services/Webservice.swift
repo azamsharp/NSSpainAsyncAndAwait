@@ -35,6 +35,31 @@ class Webservice {
     }
     
     
+    func getLatestNews(url: URL) async throws -> [NewsArticle] {
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            getLatestNews(url: Constants.Urls.newsURL) { result in
+                switch result {
+                    case .success(let newsArticles):
+                        continuation.resume(returning: newsArticles)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                }
+            }
+        }
+        
+    }
+    
+    
+    
+    func getAllStocks(url: URL) async throws -> [Stock] {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw NetworkError.badRequest }
+        let stocks = try? JSONDecoder().decode([Stock].self, from: data)
+        return stocks ?? []
+    }
+    
+    
     func getAllStocks(url: URL, completion: @escaping (Result<[Stock], NetworkError>) -> Void) {
         
         URLSession.shared.dataTask(with: url) { data, response, error in
